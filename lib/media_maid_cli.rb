@@ -12,7 +12,7 @@ class MediaMaidCLI < Thor
 
   class_option :verbose, type: :boolean
 
-  desc 'fix_mtime', 'TODO'
+  desc 'fix_mtime SOURCE_DIR', 'Updates the file\'s mtime to the file\'s "event_date" for all media in the SOURCE_DIR'
   option :test, type: :boolean
   def fix_mtime(source_dir)
     missing, not_needed, fixed = 0, 0, 0
@@ -29,6 +29,18 @@ class MediaMaidCLI < Thor
       end
     end
     log "SUMMARY --> Fixed: #{fixed.to_s.green} Not Needed: #{not_needed.to_s.green} Missing: #{missing.to_s.green}"
+  end
+
+  desc 'organize SOURCE_DIR DEST_DIR', 'Organizes all media in the given SOURCE_DIR to the given DEST_DIR using a date-based directory structure'
+  option :test, type: :boolean
+  def organize(source_dir, dest_dir)
+    count = 0
+    Dir.foreach(source_dir) do |file|
+      next if IGNORE_LIST.include? file
+      move_file(source_dir, file, dest_dir)
+      count += 1
+    end
+    log "SUMMARY --> Moved #{count} files from #{source_dir} to #{dest_dir}"
   end
 
   private
@@ -49,6 +61,16 @@ class MediaMaidCLI < Thor
     else
       return -1
     end
+  end
+
+  def move_file(source_dir, filename, dest_dir)
+    event_time = get_event_time(source_dir, filename)
+    sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')}-#{event_time.strftime('%B').downcase}"
+    unless options[:test]
+      FileUtils.mkdir_p(dest_dir + sub_dir)
+      FileUtils.mv(source_dir + filename, dest_dir + sub_dir)
+    end
+    log "Moved #{filename} to #{dest_dir + sub_dir}"
   end
 
   def get_event_time(source_dir, filename)
@@ -74,12 +96,6 @@ class MediaMaidCLI < Thor
       log "#{filename.green} #{'UNRECOGNIZED FILE TYPE'.red}"
       nil
     end
-  end
-
-  def move_file(source_dir, dest_dir, filename, event_time)
-    sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')}-#{event_time.strftime('%B').downcase}"
-    FileUtils.mkdir_p(dest_dir + sub_dir)
-    FileUtils.mv(source_dir + filename, dest_dir + sub_dir)
   end
 
   def log(message)
