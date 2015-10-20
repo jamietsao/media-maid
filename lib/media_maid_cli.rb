@@ -8,7 +8,7 @@ require 'yaml'
 #
 class MediaMaidCLI < Thor
   IGNORE_LIST = %w(. .. .DS_Store .picasa.ini)
-  DIFF_THRESHOLD_IN_MILLIS = 1000;
+  DIFF_THRESHOLD_IN_MILLIS = 1000
 
   # input_source_dir_path = '/Users/jamie/Dropbox/Photos/Camera Sync/Test/'
 
@@ -24,10 +24,10 @@ class MediaMaidCLI < Thor
   # # estimate(source_dir_path)
   # clean(source_dir_path, dest_dir_path)
 
-  class_option :verbose, :type => :boolean
+  class_option :verbose, type: :boolean
 
   desc 'fix_mtime', 'TODO'
-  option :test, :type => :boolean
+  option :test, type: :boolean
   def fix_mtime(source_dir)
     missing, not_needed, fixed = 0, 0, 0
     Dir.foreach(source_dir) do |file|
@@ -84,14 +84,14 @@ class MediaMaidCLI < Thor
   end
 
   def move_file(source_dir, dest_dir, filename, event_time)
-    sub_dir = "#{event_time.year}/#{event_time.strftime("%Y-%m")}-#{event_time.strftime("%B").downcase}"
+    sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')}-#{event_time.strftime('%B').downcase}"
     FileUtils.mkdir_p(dest_dir + sub_dir)
     FileUtils.mv(source_dir + filename, dest_dir + sub_dir)
   end
 
   def clean(source_dir_path, dest_dir_path)
     Dir.foreach(source_dir_path) do |file|
-      next if file == '.' or file == '..'
+      next if file == '.' || file == '..'
       event_time = get_event_time(source_dir_path, file)
       if event_time
         update_mtime(source_dir_path + file, event_time)

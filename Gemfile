@@ -7,5 +7,5 @@ gem 'thor'
 group :developement do
   gem 'rspec'
   gem 'rspec-its'
+  gem 'rubocop'
 end
-

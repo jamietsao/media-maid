@@ -2,7 +2,6 @@ require 'mini_exiftool'
 require 'media_maid_cli'
 
 describe MediaMaidCLI do
-
   describe '#get_event_time' do
     subject { described_class.new.send(:get_event_time, source_dir, filename) }
     let(:source_dir) { './spec/data/' }
@@ -40,5 +39,4 @@ describe MediaMaidCLI do
       end
     end
   end
-
 end
