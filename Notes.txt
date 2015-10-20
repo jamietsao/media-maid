@@ -5,7 +5,7 @@ JPG
 ----
 - Use SubSecDateTimeOriginal if available, else DateTimeOriginal
 - Timezone data is not stored in EXIF so can only assume local time
-- A file's last modified time (FileModifyDate) includes timezone so when a photo is offloaded from camera (via USB), "DateTimeOriginal" is parsed into that computer's timezone.  This basically means timezone should just be ignored and always assume photo timestamp is local time (of wherever photo was taken)
+- A file's last modified time (FileModifyDate/mtime) includes timezone so when a photo is offloaded from camera (via USB), "DateTimeOriginal" is parsed into that computer's timezone.  This basically means timezone should just be ignored and always assume photo timestamp is local time (of wherever photo was taken)
 
 
 MOV

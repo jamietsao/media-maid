@@ -26,12 +26,6 @@ class MediaMaidCLI < Thor
 
   class_option :verbose, :type => :boolean
 
-  desc 'all_exif', 'TODO'
-  def all_exif(file)
-    exif = MiniExiftool.new(file)
-    log exif.to_yaml
-  end
-
   desc 'fix_mtime', 'TODO'
   option :test, :type => :boolean
   def fix_mtime(source_dir)
@@ -59,8 +53,8 @@ class MediaMaidCLI < Thor
   private
 
   def get_event_time(source_dir, filename)
-    file_path = source_dir + filename
-    if (filename.end_with?('JPG') or filename.end_with?('jpg'))
+    file_path = source_dir + filename.downcase
+    if filename.end_with?('jpg')
       exif = MiniExiftool.new(file_path)
       if options[:verbose]
         log "#{filename.green}"
@@ -69,7 +63,7 @@ class MediaMaidCLI < Thor
         log "#{'FileModifyDate:'.ljust(30)} #{exif['FileModifyDate']}"
       end
       exif['SubSecDateTimeOriginal'] ? exif['SubSecDateTimeOriginal'] : exif['DateTimeOriginal']
-    elsif (filename.end_with?('MOV') or filename.end_with?('mov'))
+    elsif filename.end_with?('mov')
       exif = MiniExiftool.new(file_path)
       if options[:verbose]
         log "#{filename.green}"
