@@ -34,13 +34,17 @@ class MediaMaidCLI < Thor
   desc 'organize SOURCE_DIR DEST_DIR', 'Organizes all media in the given SOURCE_DIR to the given DEST_DIR using a date-based directory structure'
   option :test, type: :boolean
   def organize(source_dir, dest_dir)
-    count = 0
+    count, skipped = 0, 0
     Dir.foreach(source_dir) do |file|
       next if IGNORE_LIST.include? file
-      move_file(source_dir, file, dest_dir)
-      count += 1
+      result = move_file(source_dir, file, dest_dir)
+      if result == 1
+        count += 1
+      else
+        skipped += 1
+      end
     end
-    log "SUMMARY --> Moved #{count} files from #{source_dir} to #{dest_dir}", true
+    log "SUMMARY --> Moved #{count.to_s.green} files from #{source_dir} to #{dest_dir}. Skipped: #{skipped.to_s.green}", true
   end
 
   private
@@ -65,12 +69,17 @@ class MediaMaidCLI < Thor
 
   def move_file(source_dir, filename, dest_dir)
     event_time = get_event_time(source_dir, filename)
-    sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')}-#{event_time.strftime('%B').downcase}"
-    unless options[:test]
-      FileUtils.mkdir_p(dest_dir + sub_dir)
-      FileUtils.mv(source_dir + filename, dest_dir + sub_dir)
+    if event_time
+      sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')}-#{event_time.strftime('%B').downcase}"
+      unless options[:test]
+        FileUtils.mkdir_p(dest_dir + sub_dir)
+        FileUtils.mv(source_dir + filename, dest_dir + sub_dir)
+      end
+      log "Moved #{filename} to #{dest_dir + sub_dir}"
+      return 1
+    else
+      return 0
     end
-    log "Moved #{filename} to #{dest_dir + sub_dir}"
   end
 
   def get_event_time(source_dir, filename)
