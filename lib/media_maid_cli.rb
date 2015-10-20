@@ -39,7 +39,7 @@ class MediaMaidCLI < Thor
       mtime = File.mtime(source_dir + file)
       diff = (mtime - event_time).abs
       if diff > DIFF_THRESHOLD_IN_MILLIS
-        FileUtils.touch(source_dir + file, :mtime => event_time) unless options[:test]
+        FileUtils.touch(source_dir + file, mtime: event_time) unless options[:test]
         log "Updated mtime for #{file} to #{event_time}" if options[:verbose]
         return 1
       else

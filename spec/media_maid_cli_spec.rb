@@ -44,7 +44,7 @@ describe MediaMaidCLI do
       # create copy of test media files in tmp directory
       @temp_dir = './spec/data/tmp/'
       FileUtils.mkdir_p(@temp_dir)
-      FileUtils.cp_r(Dir.glob('./spec/data/' + '*.*'), @temp_dir, :preserve => true)
+      FileUtils.cp_r(Dir.glob('./spec/data/' + '*.*'), @temp_dir, preserve: true)
     end
     subject do
       described_class.new.send(:update_mtime, temp_dir, filename)
@@ -96,5 +96,4 @@ describe MediaMaidCLI do
       FileUtils.rm_rf(@temp_dir)
     end
   end
-
 end
