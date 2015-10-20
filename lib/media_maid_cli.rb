@@ -28,7 +28,7 @@ class MediaMaidCLI < Thor
         missing += 1
       end
     end
-    log "SUMMARY --> Fixed: #{fixed.to_s.green} Not Needed: #{not_needed.to_s.green} Missing: #{missing.to_s.green}"
+    log "SUMMARY --> Fixed: #{fixed.to_s.green} Not Needed: #{not_needed.to_s.green} Missing: #{missing.to_s.green}", true
   end
 
   desc 'organize SOURCE_DIR DEST_DIR', 'Organizes all media in the given SOURCE_DIR to the given DEST_DIR using a date-based directory structure'
@@ -40,7 +40,7 @@ class MediaMaidCLI < Thor
       move_file(source_dir, file, dest_dir)
       count += 1
     end
-    log "SUMMARY --> Moved #{count} files from #{source_dir} to #{dest_dir}"
+    log "SUMMARY --> Moved #{count} files from #{source_dir} to #{dest_dir}", true
   end
 
   private
@@ -52,10 +52,10 @@ class MediaMaidCLI < Thor
       diff = (mtime - event_time).abs
       if diff > DIFF_THRESHOLD_IN_MILLIS
         FileUtils.touch(source_dir + file, mtime: event_time) unless options[:test]
-        log "Updated mtime for #{file} to #{event_time}" if options[:verbose]
+        log "Updated mtime for #{file} to #{event_time}"
         return 1
       else
-        log "event_time [#{event_time}] and mtime [#{mtime}] for are within threshold - #{'FIX NOT NEEDED'.blue}" if options[:verbose]
+        log "event_time [#{event_time}] and mtime [#{mtime}] for are within threshold - #{'FIX NOT NEEDED'.blue}"
         return 0
       end
     else
@@ -77,20 +77,16 @@ class MediaMaidCLI < Thor
     file_path = source_dir + filename
     if filename.downcase.end_with?('jpg')
       exif = MiniExiftool.new(file_path)
-      if options[:verbose]
-        log "#{filename.green}"
-        log "#{'DateTimeOriginal:'.ljust(30)} #{exif['DateTimeOriginal']}"
-        log "#{'FileModifyDate:'.ljust(30)} #{exif['FileModifyDate']}"
-      end
+      log "#{filename.green}"
+      log "#{'DateTimeOriginal:'.ljust(30)} #{exif['DateTimeOriginal']}"
+      log "#{'FileModifyDate:'.ljust(30)} #{exif['FileModifyDate']}"
       exif['DateTimeOriginal']
     elsif filename.downcase.end_with?('mov')
       exif = MiniExiftool.new(file_path)
-      if options[:verbose]
-        log "#{filename.green}"
-        log "#{'ContentCreateDate:'.ljust(30)} #{exif['ContentCreateDate']}"
-        log "#{'CreateDate:'.ljust(30)} #{exif['CreateDate']}"
-        log "#{'FileModifyDate:'.ljust(30)} #{exif['FileModifyDate']}"
-      end
+      log "#{filename.green}"
+      log "#{'ContentCreateDate:'.ljust(30)} #{exif['ContentCreateDate']}"
+      log "#{'CreateDate:'.ljust(30)} #{exif['CreateDate']}"
+      log "#{'FileModifyDate:'.ljust(30)} #{exif['FileModifyDate']}"
       exif['ContentCreateDate'] ? exif['ContentCreateDate'] : exif['CreateDate']
     else
       log "#{filename.green} #{'UNRECOGNIZED FILE TYPE'.red}"
@@ -98,7 +94,8 @@ class MediaMaidCLI < Thor
     end
   end
 
-  def log(message)
-    puts "#{options[:test] ? '[TEST MODE] '.magenta : ''}#{message}"
+  def log(message, output = nil)
+    puts "#{options[:test] ? '[TEST MODE] '.magenta : ''}#{message}" if output || options[:verbose]
   end
+
 end
