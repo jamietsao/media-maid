@@ -83,24 +83,25 @@ class MediaMaidCLI < Thor
   end
 
   def get_event_time(source_dir, filename)
+    event_time = nil
     file_path = source_dir + filename
     if filename.downcase.end_with?('jpg')
       exif = MiniExiftool.new(file_path)
       log "#{filename.green}"
       log "#{'DateTimeOriginal:'.ljust(30)} #{exif['DateTimeOriginal']}"
       log "#{'FileModifyDate:'.ljust(30)} #{exif['FileModifyDate']}"
-      exif['DateTimeOriginal']
+      event_time = exif['DateTimeOriginal']
     elsif filename.downcase.end_with?('mov')
       exif = MiniExiftool.new(file_path)
       log "#{filename.green}"
       log "#{'ContentCreateDate:'.ljust(30)} #{exif['ContentCreateDate']}"
       log "#{'CreateDate:'.ljust(30)} #{exif['CreateDate']}"
       log "#{'FileModifyDate:'.ljust(30)} #{exif['FileModifyDate']}"
-      exif['ContentCreateDate'] ? exif['ContentCreateDate'] : exif['CreateDate']
+      event_time = exif['ContentCreateDate'] ? exif['ContentCreateDate'] : exif['CreateDate']
     else
       log "#{filename.green} #{'UNRECOGNIZED FILE TYPE'.red}"
-      nil
     end
+    event_time
   end
 
   def log(message, output = nil)
