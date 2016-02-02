@@ -10,10 +10,10 @@ class MediaMaidCLI < Thor
   IGNORE_LIST = %w(. .. .DS_Store .picasa.ini)
   DIFF_THRESHOLD_IN_MILLIS = 1000
 
-  class_option :verbose, type: :boolean
+  class_option :verbose, type: :boolean, default: true
+  class_option :test, type: :boolean, default: true
 
   desc 'fix_mtime SOURCE_DIR', 'Updates the file\'s mtime to the file\'s "event_date" for all media in the SOURCE_DIR'
-  option :test, type: :boolean
   def fix_mtime(source_dir)
     missing, not_needed, fixed = 0, 0, 0
     Dir.foreach(source_dir) do |file|
@@ -32,7 +32,6 @@ class MediaMaidCLI < Thor
   end
 
   desc 'organize SOURCE_DIR DEST_DIR', 'Organizes all media in the given SOURCE_DIR to the given DEST_DIR using a date-based directory structure'
-  option :test, type: :boolean
   def organize(source_dir, dest_dir)
     count, skipped = 0, 0
     Dir.foreach(source_dir) do |file|
@@ -107,5 +106,4 @@ class MediaMaidCLI < Thor
   def log(message, output = nil)
     puts "#{options[:test] ? '[TEST MODE] '.magenta : ''}#{message}" if output || options[:verbose]
   end
-
 end
