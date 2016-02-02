@@ -11,7 +11,7 @@ class MediaMaidCLI < Thor
   DIFF_THRESHOLD_IN_MILLIS = 1000
 
   class_option :verbose, type: :boolean, default: true
-  class_option :test, type: :boolean, default: true
+  class_option :test_mode, type: :boolean, default: true
 
   desc 'fix_mtime SOURCE_DIR', 'Updates the file\'s mtime to the file\'s "event_date" for all media in the SOURCE_DIR'
   def fix_mtime(source_dir)
@@ -54,7 +54,7 @@ class MediaMaidCLI < Thor
       mtime = File.mtime(source_dir + file)
       diff = (mtime - event_time).abs
       if diff > DIFF_THRESHOLD_IN_MILLIS
-        FileUtils.touch(source_dir + file, mtime: event_time) unless options[:test]
+        FileUtils.touch(source_dir + file, mtime: event_time) unless options[:test_mode]
         log "Updated mtime for #{file} to #{event_time}"
         return 1
       else
@@ -70,7 +70,7 @@ class MediaMaidCLI < Thor
     event_time = get_event_time(source_dir, filename)
     if event_time
       sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')}-#{event_time.strftime('%B').downcase}"
-      unless options[:test]
+      unless options[:test_mode]
         FileUtils.mkdir_p(dest_dir + sub_dir)
         FileUtils.mv(source_dir + filename, dest_dir + sub_dir)
       end
@@ -104,6 +104,6 @@ class MediaMaidCLI < Thor
   end
 
   def log(message, output = nil)
-    puts "#{options[:test] ? '[TEST MODE] '.magenta : ''}#{message}" if output || options[:verbose]
+    puts "#{options[:test_mode] ? '[TEST MODE] '.magenta : ''}#{message}" if output || options[:verbose]
   end
 end

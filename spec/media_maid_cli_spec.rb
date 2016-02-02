@@ -2,8 +2,13 @@ require 'mini_exiftool'
 require 'media_maid_cli'
 
 describe MediaMaidCLI do
+  let(:thor_cli) do
+    cli = described_class.new
+    cli.options = { test_mode: false, verbose: false }
+    cli
+  end
   describe '#get_event_time' do
-    subject { described_class.new.send(:get_event_time, source_dir, filename) }
+    subject { thor_cli.send(:get_event_time, source_dir, filename) }
     let(:source_dir) { './spec/data/' }
     let(:exif_datetimeoriginal) { MiniExiftool.new(source_dir + filename)['DateTimeOriginal'] }
 
@@ -46,11 +51,9 @@ describe MediaMaidCLI do
       FileUtils.mkdir_p(@temp_dir)
       FileUtils.cp_r(Dir.glob('./spec/data/' + '*.*'), @temp_dir, preserve: true)
     end
-    subject do
-      described_class.new.send(:update_mtime, temp_dir, filename)
-    end
+    subject { thor_cli.send(:update_mtime, temp_dir, filename) }
     let(:temp_dir) { @temp_dir }
-    let(:event_time) { described_class.new.send(:get_event_time, temp_dir, filename) }
+    let(:event_time) { thor_cli.send(:get_event_time, temp_dir, filename) }
 
     context 'when \'jpg\' file' do
       context 'iPhone via Camera Sync' do
