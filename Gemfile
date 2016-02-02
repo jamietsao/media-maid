@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'colorize'
+gem 'logging'
 gem 'mini_exiftool'
 gem 'thor'
 

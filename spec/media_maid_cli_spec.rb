@@ -4,7 +4,7 @@ require 'media_maid_cli'
 describe MediaMaidCLI do
   let(:thor_cli) do
     cli = described_class.new
-    cli.options = { test_mode: false, verbose: false }
+    cli.options = { test_mode: false, log_level: 'fatal' }
     cli
   end
   describe '#get_event_time' do
