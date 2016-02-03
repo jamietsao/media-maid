@@ -10,6 +10,11 @@ class MediaMaidCLI < Thor
   IGNORE_LIST = %w(. .. .DS_Store .picasa.ini)
   DIFF_THRESHOLD_IN_MILLIS = 1000
 
+  def initialize(*args)
+    super
+    init_logger
+  end
+
   class_option :log_file, type: :string
   class_option :log_level, type: :string, default: 'debug'
   class_option :test_mode, type: :boolean, default: true
@@ -111,8 +116,11 @@ class MediaMaidCLI < Thor
   def logger
     return @logger if @logger
     @logger = Logging.logger[self]
-    @logger.level = options[:log_level].to_sym
-    @logger.add_appenders([appender_stdout, appender_file].compact)
+  end
+
+  def init_logger
+    Logging.logger.root.level = options[:log_level].to_sym
+    Logging.logger.root.add_appenders([appender_stdout, appender_file].compact)
   end
 
   def appender_stdout
