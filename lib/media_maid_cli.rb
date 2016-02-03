@@ -70,7 +70,7 @@ class MediaMaidCLI < Thor
   def move_file(source_dir, filename, dest_dir)
     event_time = get_event_time(source_dir, filename)
     if event_time
-      sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')}-#{event_time.strftime('%B').downcase}"
+      sub_dir = "#{event_time.year}/#{event_time.strftime('%Y-%m')} #{event_time.strftime('%B').downcase}"
       unless options[:test_mode]
         FileUtils.mkdir_p(dest_dir + sub_dir)
         FileUtils.mv(source_dir + filename, dest_dir + sub_dir)
