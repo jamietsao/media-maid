@@ -1,3 +1,4 @@
+require 'colorize'
 require 'logging'
 
 require 'logger_util'

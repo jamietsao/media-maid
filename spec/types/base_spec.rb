@@ -1,49 +1,8 @@
 require 'mini_exiftool'
-require 'media_maid_cli'
 
-describe MediaMaidCLI do
-  let(:thor_cli) do
-    cli = described_class.new
-    cli.options = { test_mode: false, log_level: 'fatal' }
-    cli
-  end
-  describe '#get_event_time' do
-    subject { thor_cli.send(:get_event_time, source_dir, filename) }
-    let(:source_dir) { './spec/data/' }
-    let(:exif_datetimeoriginal) { MiniExiftool.new(source_dir + filename)['DateTimeOriginal'] }
+require 'types/jpg'
 
-    context 'when \'jpg\' file' do
-      context 'iPhone via Camera Sync' do
-        let(:filename) { 'iPhone - Camera Sync.jpg' }
-
-        it 'should equal \'DateTimeOriginal\' EXIF date' do
-          is_expected.to eq exif_datetimeoriginal
-        end
-      end
-      context 'iPhone via USB' do
-        let(:filename) { 'iPhone - USB.jpg' }
-
-        it 'should equal \'DateTimeOriginal\' EXIF date' do
-          is_expected.to eq exif_datetimeoriginal
-        end
-      end
-      context 'Canon T2i via USB' do
-        let(:filename) { 'Canon T2i - USB.jpg' }
-
-        it 'should equal \'DateTimeOriginal\' EXIF date' do
-          is_expected.to eq exif_datetimeoriginal
-        end
-      end
-      context 'Canon ELPH via USB' do
-        let(:filename) { 'Canon ELPH - USB.jpg' }
-
-        it 'should equal \'DateTimeOriginal\' EXIF date' do
-          is_expected.to eq exif_datetimeoriginal
-        end
-      end
-    end
-  end
-
+describe Types::Base do
   describe '#update_mtime' do
     before(:all) do
       # create copy of test media files in tmp directory
@@ -51,11 +10,15 @@ describe MediaMaidCLI do
       FileUtils.mkdir_p(@temp_dir)
       FileUtils.cp_r(Dir.glob('./spec/data/' + '*.*'), @temp_dir, preserve: true)
     end
-    subject { thor_cli.send(:update_mtime, temp_dir, filename) }
+
+    subject { base_handler.update_mtime }
+    let(:base_handler) { type_class.new(temp_dir, filename, options) }
     let(:temp_dir) { @temp_dir }
-    let(:event_time) { thor_cli.send(:get_event_time, temp_dir, filename) }
+    let(:options) { { test_mode: false } }
+    let(:event_time) { base_handler.event_time }
 
     context 'when \'jpg\' file' do
+      let(:type_class) { Types::JPG }
       context 'iPhone via Camera Sync' do
         let(:filename) { 'iPhone - Camera Sync.jpg' }
 
