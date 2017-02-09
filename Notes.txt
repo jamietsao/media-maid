@@ -26,3 +26,8 @@ AVI
   - DateTimeOriginal is the only datetime field available
   - No timezone offset so local time representation
   - mtime is set to DateTimeOriginal upon transfer via USB
+
+
+TODO
+----
+* Fix timezone for Hawaii 2015 photos
